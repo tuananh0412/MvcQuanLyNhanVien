@@ -23,27 +23,21 @@ namespace MvcQuanLyNhanVien.Models
         {
             modelBuilder.Entity<Certificate>(entity =>
             {
+                entity.HasKey(e => e.CertificateId);
+
                 entity.ToTable("Certificate");
+
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithMany(p => p.Certificates)
+                    .HasForeignKey(d => d.Id)
+                    .HasConstraintName("FK_Certificate_Employee");
             });
 
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.ToTable("Employee");
-
-                entity.HasMany(d => d.Certificates)
-                    .WithMany(p => p.Employees)
-                    .UsingEntity<Dictionary<string, object>>(
-                        "EmployeeCertificate",
-                        l => l.HasOne<Certificate>().WithMany().HasForeignKey("CertificateId"),
-                        r => r.HasOne<Employee>().WithMany().HasForeignKey("EmployeeId"),
-                        j =>
-                        {
-                            j.HasKey("EmployeeId", "CertificateId");
-
-                            j.ToTable("EmployeeCertificate");
-
-                            j.HasIndex(new[] { "CertificateId" }, "IX_EmployeeCertificate_CertificateId");
-                        });
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -19,46 +19,22 @@ namespace QuanLyNhanVien.Controllers
         }
 
         // GET: Employees
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            return View(await _context.Employees.ToListAsync());
-        }
-
-        // GET: Employees/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // GET: Employees/Create
-        public IActionResult CreateCertificate()
-        {
-            return View();
-        }
-
-        //POST: Employees/CreateCertificate/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCertificate([Bind("CertificateId, CertificateName, CertificateRank")] Certificate certificate)
-        {
-            if (ModelState.IsValid)
+            var employees = await _context.Employees.ToListAsync();
+            var empIds =  employees.Select(e=>e.Id).ToList();
+            var certificates = await _context.Certificates.Where(c => empIds.Contains(c.Id)).ToListAsync();
+            foreach (var employee in employees)
             {
-                _context.Add(certificate);
-
-                //var employee = await _context.Employees
-                //.FirstOrDefaultAsync(m => m.Id == id);
-
-                //employee.Certificates.Add(certificate);
-
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                employee.Certificates = certificates.Where(c => c.Id == employee.Id).ToList();
             }
-            return View(certificate);
-        }
 
-    private bool EmployeeExists(int id)
-    {
-        return _context.Employees.Any(e => e.Id == id);
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                employees = employees.Where(s => s.FullName!.Contains(searchString)).ToList();
+            }
+
+            return View(employees);
+        }
     }
-}
 }

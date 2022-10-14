@@ -3,12 +3,13 @@
 @{
     ViewData["Title"] = "DetailsExperience";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    int index = 0;
 }
 
-<h1>Details</h1>
+<h1>Thông tin</h1>
 
 <div>
-    <h4>Experience</h4>
+    <h4>Nhân viên lâu năm</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -59,9 +60,48 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ProSkill)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Certificates)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Certificates.Count)
+            |
+            <a asp-action="CreateCertificateExperience" asp-route-id="@Model.Id">Thêm bằng cấp</a>
+        </dd>
     </dl>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Mã bằng cấp</th>
+                <th scope="col">Tên bằng</th>
+                <th scope="col">Xếp loại</th>
+                <th scope="col">Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Certificates)
+        {
+                index++;
+                <tr>
+                    <th scope="row">@index</th>
+                    <td>@item.CertificateId</td>
+                    <td>@item.CertificateName</td>
+                    <td>@item.CertificateRank</td>
+                    <td>
+                        <p>
+                            <a asp-controller="Experiences" asp-action="EditCertificateExperience" asp-route-id="@item.CertificateId">Sửa</a>
+                            |
+                            <a asp-controller="Experiences" asp-action="DeleteCertificateExperience" asp-route-id="@item.CertificateId">Xóa</a>
+                        </p>
+                    </td>
+                </tr>
+        }
+        </tbody>
+    </table>
 </div>
 <div>
-    <a asp-action="EditExperience" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-controller="Employees" asp-action="Index">Quay lại danh sách</a>
+    <a asp-action="EditExperience" asp-route-id="@Model?.Id">Sửa nhân viên</a>
+    |
+    <a asp-controller="Employees" asp-action="Index">Quay lại</a>
 </div>
